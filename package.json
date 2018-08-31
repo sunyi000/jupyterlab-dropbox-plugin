@@ -1,0 +1,87 @@
+{
+  "private": true,
+  "name": "jupyterlab_dropbox",
+  "version": "0.0.1",
+  "description": "A JupyterLab extension.",
+  "author": "yi sun",
+  "main": "lib/plugin.js",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "jupyterlab": {
+    "extension": true
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-classes",
+      "@babel/plugin-syntax-dynamic-import",
+      "@babel/plugin-syntax-import-meta",
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-json-strings",
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      "@babel/plugin-proposal-function-sent",
+      "@babel/plugin-proposal-export-namespace-from",
+      "@babel/plugin-proposal-numeric-separator",
+      "@babel/plugin-proposal-throw-expressions"
+    ]
+  },
+  "scripts": {
+    "build:lib": "babel src -d lib",
+    "_build:labextension": "cd jupyterlab_dropbox && rimraf labextension && mkdirp labextension && cd labextension && npm pack ../..",
+    "_build:nbextension": "webpack",
+    "_build:all": "npm run build:lib && npm run build:labextension && npm run build:nbextension",
+    "build": "npm run build:lib",
+    "prepare": "npm run build",
+    "_watch:nbextension": "webpack --watch",
+    "watch:lib": "babel src -d lib --watch",
+    "watch": "npm-run-all -p watch:*"
+  },
+  "dependencies": {
+    "@jupyter-widgets/base": "^1.2.1",
+    "@jupyterlab/apputils": "^0.18.4",
+    "@jupyterlab/coreutils": "^2.1.4",
+    "@jupyterlab/filebrowser": "^0.18.5",
+    "@jupyterlab/mainmenu": "^0.7.4",
+    "@phosphor/commands": "^1.5.0",
+    "@phosphor/widgets": "^1.6.0",
+    "little-loader": "^0.2.0",
+    "utils": "^0.3.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-decorators": "^7.0.0",
+    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
+    "@babel/plugin-proposal-function-sent": "^7.0.0",
+    "@babel/plugin-proposal-json-strings": "^7.0.0",
+    "@babel/plugin-proposal-numeric-separator": "^7.0.0",
+    "@babel/plugin-proposal-throw-expressions": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-syntax-import-meta": "^7.0.0",
+    "@babel/plugin-transform-classes": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "css-loader": "^1.0.0",
+    "file-loader": "^2.0.0",
+    "fs": "0.0.1-security",
+    "fs-extra": "^7.0.0",
+    "json-loader": "^0.5.7",
+    "style-loader": "^0.23.0",
+    "url-loader": "^1.1.1",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0"
+  }
+}
