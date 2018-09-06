@@ -8,9 +8,11 @@
 
 
 var coreutils=require('@jupyterlab/coreutils');
-var apputils=require('@jupyterlab/apputils');
+
+var services=require('@jupyterlab/services');
 
 const pgc= coreutils.PageConfig;
+const defaultSettings=services.ServerConnection.makeSettings();
 
     // constructor
     var ImportService = function(options) {
@@ -19,12 +21,12 @@ const pgc= coreutils.PageConfig;
         this.base_url = pgc.getBaseUrl() || ""
     }
 
-    ImportService.prototype.api_url = function() {
-        var url_parts = [
-            this.base_url, 'api/fetch',
-            utils.url_join_encode.apply(null, arguments)
-        ]
-        return utils.url_path_join.apply(null, url_parts)
+    ImportService.prototype.api_url = function(...params) {
+        return coreutils.URLExt.join(
+            this.base_url, 
+            'api/fetch',
+            coreutils.URLExt.encodeParts(...params) 
+        );
     }
 
 
@@ -37,19 +39,22 @@ const pgc= coreutils.PageConfig;
      * returns a Promise with  resolves to status ok or error
      */
     ImportService.prototype.post = function(path, files, options) {
-        var settings = {
+
+        var init ={
             // request
             method : "POST",
-            cache : false,
+            mode: "cors",
+            cache : "no-cache",
             // post data
-            contentType: "application/json",
-            data: JSON.stringify(files),
-            // response data
-            dataType : "json"
-        }
+            headers:{
+                 "Content-Type": "application/json",
+            },           
+            body: JSON.stringify(files)
+        };
         var url = this.api_url(path)
 
-        return utils.promising_ajax(url, settings)
+        return services.ServerConnection.makeRequest(url,init,defaultSettings)
+
     }
 
 
@@ -62,22 +67,18 @@ const pgc= coreutils.PageConfig;
      * TODO: add option to retrieve finished fetches?
      */
     ImportService.prototype.get = function(path, options) {
-        var settings = {
-            // request
+        var init ={
             method : "GET",
-            cache : false,
-            // response data
-            dataType : "json"
-        }
+            mode: "cors",
+            cache : "no-cache",
+            headers:{
+                 "Content-Type": "application/json",
+            }
+        };
         var url = this.api_url(path)
-        return utils.promising_ajax(url, settings)
+
+        return services.ServerConnection.makeRequest(url,init,defaultSettings)
     }
-
-
-    // notebook list: ... items with '.list_item:not(.new-file)' .. won't be cleared
-
-
-
 
     // module exports
     export default {

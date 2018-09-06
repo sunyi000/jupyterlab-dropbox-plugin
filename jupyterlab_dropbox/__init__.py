@@ -1,8 +1,5 @@
-"""
-define this module as a notebook and a notebook server extension
-"""
 from notebook.utils import url_path_join
-
+from pprint import pprint
 
 # Jupyter Notebook Extension points
 def _jupyter_nbextension_paths():
@@ -11,15 +8,15 @@ def _jupyter_nbextension_paths():
         # the path is relative to the `nb_data_ui` directory
         src="static",
         # directory in the `nbextension/` namespace
-        dest="nb_data_ui",
+        dest="jupyterlab_dropbox",
         # _also_ in the `nbextension/` namespace
-        require="nb_data_ui/index"
+        require="jupyterlab_dropbox/plugin"
     )]
 
 # Jupyter Notebook Server Extension point
 def _jupyter_server_extension_paths():
     return [{
-        "module": "nb_data_ui"
+        "module": "jupyterlab_dropbox"
     }]
 
 
@@ -34,7 +31,7 @@ def load_jupyter_server_extension(nbapp):
 def setup_handlers(web_app):
     handlers = []
     for module in ('upload', 'download'):
-        mod = __import__('nb_data_ui.{}.handlers'.format(module),
+        mod = __import__('jupyterlab_dropbox.{}.handlers'.format(module),
                          fromlist=['default_handlers'])
         handlers.extend(mod.default_handlers)
 
@@ -43,8 +40,11 @@ def setup_handlers(web_app):
     for handler in handlers:
         # prepend base_url if required
         pattern = url_path_join(web_app.settings['base_url'], handler[0])
+
         new_handler = tuple([pattern] + list(handler[1:]))
+        print ("new handler: %s" %(new_handler,))
         new_handlers.append(new_handler)
 
     host_pattern = '.*$'
     web_app.add_handlers(host_pattern, new_handlers)
+    

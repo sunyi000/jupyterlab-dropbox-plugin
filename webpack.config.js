@@ -9,7 +9,7 @@ var version = require('./package.json').version;
 var loaders = [
   {
     test: /\.(js|jsx)$/,
-    include: [path.join(__dirname, 'jupyterlab_dropbox/static')],
+    include: [path.join(__dirname, 'src')],
     use: {
         loader: 'babel-loader',
         options: {
@@ -67,44 +67,37 @@ module.exports = [
    * "load_ipython_extension" function which is required for any notebook
    * extension.
    */
-  Object.assign({}, base, {
-    entry: path.join(__dirname, 'src', 'nb_extension.js'),
-    output: Object.assign({}, base.output, {
-      filename: 'extension.js',
-      path: path.join(
-        __dirname,
-        'jupyterlab_dropbox',
-        'nbextension'
-      )
-    }),
-    externals: [
-      'nbextensions/jupyterlab_dropbox/index',
-      'base/js/namespace'
-    ]
-  }),
-  /**
+  // Object.assign({}, base, {
+  //   entry: path.join(__dirname, 'src', 'nb_extension.js'),
+  //   output: Object.assign({}, base.output, {
+  //     filename: 'extension.js',
+  //     path: path.join(
+  //       __dirname,
+  //       'jupyterlab_dropbox',
+  //       'nbextension'
+  //     )
+  //   }),
+  //   externals: [
+  //     'nbextensions/jupyterlab_dropbox/index',
+  //     'base/js/namespace'
+  //   ]
+  // }),
+  /*
    * This bundle contains the implementation of the extension.
    *
    * It must be an amd module
    */
-  Object.assign({}, base, {
-    entry: path.join(__dirname, 'src', 'nb_index.js'),
-    //entry: path.join(__dirname, 'src', 'nb_index.js'),
-    output: Object.assign({}, base.output, {
-      filename: 'index.js',
-      path: path.join(
-        __dirname,
-        'jupyterlab_dropbox',
-        'nbextension'
-      )
-    })
-  }),
-
-  resolve:{
-    alias: {
-        "dropboxchooser": "https://www.dropbox.com/static/api/2/dropins.js"
-
-    }
-  }
+  // Object.assign({}, base, {
+  //   entry: path.join(__dirname, 'src', 'nb_index.js'),
+  //   //entry: path.join(__dirname, 'src', 'nb_index.js'),
+  //   output: Object.assign({}, base.output, {
+  //     filename: 'index.js',
+  //     path: path.join(
+  //       __dirname,
+  //       'jupyterlab_dropbox',
+  //       'nbextension'
+  //     )
+  //   })
+  // })
 
 ];

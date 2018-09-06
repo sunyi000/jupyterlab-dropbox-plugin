@@ -1,1 +1,1 @@
-recursive-include src *.js
+recursive-include jupyterlab_dropbox *.js
