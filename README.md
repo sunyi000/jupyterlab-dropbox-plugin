@@ -10,9 +10,13 @@ A JupyterLab extension.
 ## Installation
 
 To install using pip:
+cd to the directory
 
 ```bash
+pip install -e .
 jupyter labextension install jupyterlab_dropbox
+jupyter serverextension enable --py jupyterlab_dropbox
+
 ```
 
 ## Development
