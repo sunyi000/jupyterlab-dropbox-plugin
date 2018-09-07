@@ -93,7 +93,7 @@ export default [{
       saver_btn.setAttribute('href','#');
       saver_btn.setAttribute('class','dropbox-dropin-btn dropbox-dropin-default');
       saver_btn.append(saver_span);
-      saver_btn.innerHTML="Save to Dropbox";
+      saver_btn.append("Save to Dropbox");
  
 
       saver_btn.style.display="hidden";
@@ -104,12 +104,49 @@ export default [{
 
       });
 
-      createDropboxMenu(topmenu,commands);
+      //adding dropbox menu with chooser command to main menubar
+      var dropboxMenuBar=createDropboxMenu(commands);
+      topmenu.addMenu(dropboxMenuBar,{rank:100});
 
-      createDropboxContextMenu(browserWidget,commands,saver_btn);
 
-      console.log('JupyterLab extension jupyterlab_dropbox is activated!');
-      console.log(app.commands);
+      //create saver context menu
+      var saverContextMenu=createDropboxContextMenu(commands);
+
+      //right click to show saver context menu
+      let node=browserWidget.node.getElementsByClassName('jp-DirListing-content')[0];
+      node.addEventListener('contextmenu',(event)=>{
+            event.preventDefault();
+            const model=browserWidget.modelForClick(event);
+
+            saverContextMenu.open(event.clientX,event.clientY);
+            //document.getElementsByClassName("p-Widget p-Menu")[1].style.width='206px';
+      });
+
+      // left click to show saver button
+      node.addEventListener('click',(event)=>{
+            const model=browserWidget.modelForClick(event);
+            if(model.type=="file"|| model.type=="notebook")
+            {
+               document.getElementsByClassName('jp-FileBrowser-toolbar')[0].append(saver_btn);
+               saver_btn.style.display="inline-block";
+               
+               //i'm trying to avoid duplicated menu items...but still haven't find
+               //out a more elegant way to do this...
+               dropboxMenuBar.removeItem({command: CommandIDs.saver});
+               dropboxMenuBar.addItem({command: CommandIDs.saver});
+            }
+            else
+            {
+              saver_btn.style.display="hidden";
+
+              dropboxMenuBar.removeItem({command: CommandIDs.saver});
+            }
+
+      });
+
+
+      // console.log('JupyterLab extension jupyterlab_dropbox is activated!');
+      // console.log(app.commands);
 
     }
 
@@ -122,8 +159,12 @@ export default [{
       var files=[];
       var selected=browserWidget.selectedItems();
       var file=selected.next();
-      while(file!=null && file.type=="file"){
-        files.push(file.name);
+
+      while(file!=null){
+        if(file.type=="file"|| file.type=="notebook")
+        {
+            files.push(file.name);
+        }
         file=selected.next();
       }
 
@@ -166,56 +207,60 @@ export default [{
             console.log(error);
         })
 
+      }else{
+
       }
                 
     }
 
-    function createDropboxMenu(topmenu,commands){
-      var m=new menu.Menu({commands});
+    function createDropboxMenu(commands){
+      var saverMainMenu=new menu.Menu({commands});
 
-      m.title.label='Dropbox';
-	    [
-          CommandIDs.saver,
-          CommandIDs.chooser,
-        ].forEach(command => {
-        	m.addItem({ command });          
-    	});      
+      saverMainMenu.title.label='Dropbox';
+
+      saverMainMenu.addItem({command: CommandIDs.chooser});
+
+	    // [
+     //      CommandIDs.saver,
+     //      CommandIDs.chooser,
+     //  ].forEach(command => {
+     //    	saverMainMenu.addItem({ command });          
+    	// });      
  
-      topmenu.addMenu(m,{rank:2000});
+      //topmenu.addMenu(saverMainMenu,{rank:2000});
 
+      return saverMainMenu;
 
     }
 
-    function createDropboxContextMenu(widget,commands,saver_btn){
-      var m=new menu.Menu({commands});
-
-      //m.title.label='Dropbox';
+    function createDropboxContextMenu(commands){
+      var saverContextMenu=new menu.Menu({commands});
       [
           CommandIDs.saver,
         ].forEach(command => {
-          m.addItem({ command });          
+          saverContextMenu.addItem({ command });          
       });      
 
+      return saverContextMenu;
 
+      // let node=widget.node.getElementsByClassName('jp-DirListing-content')[0];
+      // node.addEventListener('contextmenu',(event)=>{
+      //       event.preventDefault();
+      //       const model=widget.modelForClick(event);
 
-      let node=widget.node.getElementsByClassName('jp-DirListing-content')[0];
-      node.addEventListener('contextmenu',(event)=>{
-            event.preventDefault();
-            const model=widget.modelForClick(event);
+      //       //saverContextMenu.open(event.clientX,event.clientY);
+      //       //document.getElementsByClassName("p-Widget p-Menu")[1].style.width='206px';
+      // });
 
-            //m.open(event.clientX,event.clientY);
-            //document.getElementsByClassName("p-Widget p-Menu")[1].style.width='206px';
-      });
+      // node.addEventListener('click',(event)=>{
+      //       const model=widget.modelForClick(event);
+      //       if(model.type=="file"|| model.type=="notebook")
+      //        {
+      //          document.getElementsByClassName('jp-FileBrowser-toolbar')[0].append(saver_btn);
+      //          saver_btn.style.display="inline-block";
+      //        }
 
-      node.addEventListener('click',(event)=>{
-            const model=widget.modelForClick(event);
-            if(model.type=="file"|| model.type=="notebook")
-             {
-               document.getElementsByClassName('jp-FileBrowser-toolbar')[0].append(saver_btn);
-               saver_btn.style.display="inline-block";
-             }
-
-      });
+      // });
      
 
 
