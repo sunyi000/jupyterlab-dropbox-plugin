@@ -130,16 +130,11 @@ export default [{
                document.getElementsByClassName('jp-FileBrowser-toolbar')[0].append(saver_btn);
                saver_btn.style.display="inline-block";
                
-               //i'm trying to avoid duplicated menu items...but still haven't find
-               //out a more elegant way to do this...
-               dropboxMenuBar.removeItem({command: CommandIDs.saver});
-               dropboxMenuBar.addItem({command: CommandIDs.saver});
             }
             else
             {
               saver_btn.style.display="hidden";
 
-              dropboxMenuBar.removeItem({command: CommandIDs.saver});
             }
 
       });
@@ -208,7 +203,7 @@ export default [{
         })
 
       }else{
-
+        alert("Please select files before upload. Folders are not supported");
       }
                 
     }
@@ -218,14 +213,14 @@ export default [{
 
       saverMainMenu.title.label='Dropbox';
 
-      saverMainMenu.addItem({command: CommandIDs.chooser});
+      //saverMainMenu.addItem({command: CommandIDs.chooser});
 
-	    // [
-     //      CommandIDs.saver,
-     //      CommandIDs.chooser,
-     //  ].forEach(command => {
-     //    	saverMainMenu.addItem({ command });          
-    	// });      
+	    [
+          CommandIDs.saver,
+          CommandIDs.chooser,
+      ].forEach(command => {
+        	saverMainMenu.addItem({ command });          
+    	});      
  
       //topmenu.addMenu(saverMainMenu,{rank:2000});
 
