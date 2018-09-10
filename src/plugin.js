@@ -21,7 +21,7 @@ load("https://www.dropbox.com/static/api/2/dropins.js", {
 	},
 },this);
 
-load("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js");
+//load("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js");
 
 
 var CommandIDs;
@@ -95,7 +95,7 @@ export default [{
       saver_btn.append(saver_span);
       saver_btn.append("Save to Dropbox");
  
-
+      saver_btn.style.whiteSpace="nowrap";
       saver_btn.style.display="hidden";
 
       saver_btn.addEventListener('click',(event)=>{
