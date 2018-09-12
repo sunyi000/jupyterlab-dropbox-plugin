@@ -11,7 +11,8 @@
     "jupyterlab-extension"
   ],
   "jupyterlab": {
-    "extension": true
+    "extension": true,
+    "schemaDir": "schema"
   },
   "babel": {
     "presets": [

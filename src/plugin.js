@@ -13,16 +13,6 @@ var tempurl_service=require('./tempurl_service.js').default;
 
 
 var load=require('little-loader');
-load("https://www.dropbox.com/static/api/2/dropins.js", {
-	// setup: {"data-api-key":"xnthqk084hoxoc0"},
-	callback:function(){
-		Dropbox.appKey="xnthqk084hoxoc0";
-		console.log(Dropbox);
-	},
-},this);
-
-//load("http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js");
-
 
 var CommandIDs;
 (function (CommandIDs) {
@@ -30,22 +20,48 @@ var CommandIDs;
     CommandIDs.chooser = 'dropbox-chooser';
 })(CommandIDs || (CommandIDs = {}));
 
-export default [{
-    id: 'jupyterlab_dropbox',
-    autoStart: true,
-    requires: [mainMenu.IMainMenu, fileBrowser.IFileBrowserFactory],
-    activate: function(app,topmenu,browserFactory) {
+const plugin ={
+  activate,
+  id: 'jupyterlab_dropbox:plugin',
+  requires: [mainMenu.IMainMenu, fileBrowser.IFileBrowserFactory,coreutils.ISettingRegistry],
+  autoStart: true
+}
 
-    	const {commands}=app;
+export default plugin;
+
+//export default [{
+//    id: 'jupyterlab_dropbox:plugin',
+//    autoStart: true,
+ //   requires: [mainMenu.IMainMenu, fileBrowser.IFileBrowserFactory,coreutils.ISettingRegistry],
+function activate(app,topmenu,browserFactory, settingRegistry) {
+
+    	const {commands, restored}=app;
     	const u= coreutils.PageConfig;
       const browserModel= browserFactory.tracker.currentWidget.model;
       const browserWidget=browserFactory.tracker.currentWidget;
+      const id=plugin.id;
 
       // const cfg=jupyterservice.ConfigSection;
 
     	console.log(app);
 
       console.log(browserFactory.tracker.currentWidget.model.path);
+
+      //load dropin.js
+      load("https://www.dropbox.com/static/api/2/dropins.js", {
+        
+        callback:function(){
+          //console.log(Dropbox);
+          Promise.all([settingRegistry.load(id), restored])
+          .then(([settings]) => {
+            console.log(settings);
+            Dropbox.appKey=settings.get("appkey").composite;
+          })
+          .catch((reason) => {
+            console.error(reason.message);
+          });
+        },
+      },this);
 
      // var cfg=new jupyterservice.ConfigSection('fetch',common_options);
        
@@ -118,8 +134,54 @@ export default [{
             event.preventDefault();
             const model=browserWidget.modelForClick(event);
 
-            saverContextMenu.open(event.clientX,event.clientY);
-            //document.getElementsByClassName("p-Widget p-Menu")[1].style.width='206px';
+            //saverContextMenu.open(event.clientX,event.clientY);
+            //if selected file or notebook, create dropbox context menu
+            if(model.type=="file"|| model.type=="notebook")
+            {  
+                //get current contextmenu
+                var contextMenuDiv=document.getElementsByClassName("p-Widget p-Menu")[0];
+                var contextMenuUl=document.body.querySelectorAll('.p-Menu > ul')[0];
+                //create dropbox li
+                var li= document.createElement("li");
+                li.setAttribute("data-type","command");
+                li.setAttribute("data-command",CommandIDs.saver);
+                li.className="p-Menu-item";
+
+                var divicon=document.createElement("div");
+                divicon.className="p-Menu-itemIcon jp-MaterialIcon dropin-btn-status";
+
+                var divlbl=document.createElement("div");
+                divlbl.className="p-Menu-itemLabel";
+                divlbl.appendChild(document.createTextNode("Upload to Dropbox"));
+
+                var divshorcut=document.createElement("div");
+                divshorcut.className="p-Menu-itemShortcut";
+
+                var divsub=document.createElement("div");
+                divsub.className="p-Menu-itemSubmenuIcon";
+
+                li.appendChild(divicon);
+                li.appendChild(divlbl);
+                li.appendChild(divshorcut);
+                li.appendChild(divsub);
+
+                contextMenuUl.appendChild(li);
+
+                li.onclick=function(){
+                 // this.parentNode.removeChild(this);
+                  document.body.removeChild(contextMenuDiv);
+                  dropboxSaver(browserWidget,browserModel.path);
+                }
+                li.onmouseover=function(){
+                  this.classList.add("p-mod-active");
+
+                }
+                li.onmouseout=function(){
+                  this.classList.remove("p-mod-active");
+
+                }
+            }
+
       });
 
       // left click to show saver button
@@ -133,7 +195,7 @@ export default [{
             }
             else
             {
-              saver_btn.style.display="hidden";
+              saver_btn.style.display="none";
 
             }
 
@@ -146,7 +208,7 @@ export default [{
     }
 
 
-}];
+//}];
 
     function dropboxSaver(browserWidget,path)
     {

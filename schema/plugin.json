@@ -1,0 +1,14 @@
+{
+  "jupyter.lab.setting-icon-class": "jp-NotebookIcon",
+  "jupyter.lab.setting-icon-label": "Dropbox",
+  "title": "Dropbox",
+  "description": "Dropbox app key",
+  "properties": {
+    "appkey": {
+      "type": "string",
+      "title": "appkey",
+      "default": "xnthqk084hoxoc0"
+    }
+  },
+  "type": "object"
+}
