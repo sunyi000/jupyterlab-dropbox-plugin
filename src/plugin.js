@@ -126,7 +126,7 @@ function activate(app,topmenu,browserFactory, settingRegistry) {
 
 
       //create saver context menu
-      var saverContextMenu=createDropboxContextMenu(commands);
+     // var saverContextMenu=createDropboxContextMenu(commands);
 
       //right click to show saver context menu
       let node=browserWidget.node.getElementsByClassName('jp-DirListing-content')[0];
@@ -135,7 +135,7 @@ function activate(app,topmenu,browserFactory, settingRegistry) {
             const model=browserWidget.modelForClick(event);
 
             //saverContextMenu.open(event.clientX,event.clientY);
-            //if selected file or notebook, create dropbox context menu
+            // //if selected file or notebook, create dropbox context menu
             if(model.type=="file"|| model.type=="notebook")
             {  
                 //get current contextmenu
@@ -169,7 +169,7 @@ function activate(app,topmenu,browserFactory, settingRegistry) {
 
                 li.onclick=function(){
                  // this.parentNode.removeChild(this);
-                  document.body.removeChild(contextMenuDiv);
+                  //document.body.removeChild(contextMenuDiv);
                   dropboxSaver(browserWidget,browserModel.path);
                 }
                 li.onmouseover=function(){
@@ -248,7 +248,10 @@ function activate(app,topmenu,browserFactory, settingRegistry) {
 
               },
               progress: function(progress){
-
+                  var notify=true;
+                  if (notify){
+                    
+                  }
               },
               cancel: function(){
                   console.log("upload cancelled");
